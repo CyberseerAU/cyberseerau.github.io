@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberseer</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-size: 4rem;
+            color: #fff;
+            text-align: center;
+            position: absolute;
+            z-index: 10;
+        }
+        .fireworks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .firework {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.75;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Cyberseer</h1>
+    <canvas class="fireworks"></canvas>
+
+    <script>
+        const canvas = document.querySelector('.fireworks');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createFirework() {
+            const firework = {
+                x: random(0, canvas.width),
+                y: canvas.height,
+                radius: random(3, 7),
+                speedX: random(-3, 3),
+                speedY: random(-15, -20),
+                color: `hsl(${random(0, 360)}, 100%, 50%)`,
+                life: random(20, 30)
+            };
+
+            return firework;
+        }
+
+        let fireworks = [];
+        for (let i = 0; i < 10; i++) {
+            fireworks.push(createFirework());
+        }
+
+        function drawFirework(firework) {
+            ctx.beginPath();
+            ctx.arc(firework.x, firework.y, firework.radius, 0, Math.PI * 2);
+            ctx.fillStyle = firework.color;
+            ctx.fill();
+        }
+
+        function updateFirework(firework) {
+            firework.x += firework.speedX;
+            firework.y += firework.speedY;
+            firework.radius *= 0.95;
+            firework.speedY += 0.2;
+            firework.life--;
+
+            return firework.life > 0 && firework.radius > 0.5;
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            fireworks = fireworks.filter(updateFirework);
+            fireworks.forEach(drawFirework);
+
+            if (fireworks.length < 10) {
+                fireworks.push(createFirework());
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
